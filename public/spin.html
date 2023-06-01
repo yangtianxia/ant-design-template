@@ -1,0 +1,94 @@
+<style type="text/css">
+  body {
+    background-color: #fff;
+  }
+  
+  .spin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    transform: translate(-50%, -50%);
+  }
+  
+  .spin-dot {
+    width: 32px;
+    height: 32px;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position: relative;
+    display: inline-block;
+    animation: spinRotate 1.2s infinite linear;
+  }
+  
+  .spin-dot > div {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    display: inline-block;
+    border-radius: 100%;
+    transform: scale(.75);
+    transform-origin: 50% 50%;
+    opacity: .3;
+    background-color: #1890ff;
+    overflow: hidden;
+    animation: spinMove 1s linear infinite alternate;
+  }
+  
+  .spin-dot > div:nth-child(1) {
+    top: 0;
+    left: 0;
+  }
+  
+  .spin-dot > div:nth-child(2) {
+    top: 0;
+    right: 0;
+    animation-delay: 0.4s;
+  }
+  
+  .spin-dot > div:nth-child(3) {
+    right: 0;
+    bottom: 0;
+    animation-delay: 0.8s;
+  }
+  
+  .spin-dot > div:nth-child(4) {
+    bottom: 0;
+    left: 0;
+    animation-delay: 1.2s;
+  }
+  
+  @-webkit-keyframes spinMove {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes spinMove {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @-webkit-keyframes spinRotate {
+    to {
+      transform: rotate(405deg);
+    }
+  }
+  
+  @keyframes spinRotate {
+    to {
+      transform: rotate(405deg);
+    }
+  }
+</style>
+
+<div class="spin">
+  <div class="spin-dot">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
