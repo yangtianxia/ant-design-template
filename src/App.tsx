@@ -5,8 +5,8 @@ import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 
 export default defineComponent({
-  render() {
-    return (
+  setup () {
+    return () => (
       <ConfigProvider locale={zhCN}>
         <RouterView />
       </ConfigProvider>

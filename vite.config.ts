@@ -6,6 +6,8 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import pluginImporter from 'vite-plugin-importer'
 import autoprefixer from 'autoprefixer'
+// @ts-ignore
+import pkg from './package.json'
 
 const resolve = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 
@@ -32,8 +34,17 @@ export default defineConfig(({ mode }) => {
         minify: true,
         inject: {
           data: {
-            injectSpin: ejs.fileLoader(resolve('./public/spin.html')).toString(),
-            injectScript: ''
+            __VERSION__: pkg.version,
+            injectSpin: ejs.render(
+              ejs.fileLoader(resolve('./template/spin.html')).toString()
+            ),
+            injectScript: ejs.render(
+              ejs.fileLoader(resolve('./template/script.html')).toString(),
+              {
+                __DEPEND__: pkg.dependencies,
+                __DEV__: mode === 'development'
+              }
+            )
           }
         }
       }),
