@@ -1,15 +1,19 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
+import { renderExternalScript } from './template/script'
 import ejs from 'ejs'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import pluginImporter from 'vite-plugin-importer'
+import externalGlobals from 'rollup-plugin-external-globals'
 import autoprefixer from 'autoprefixer'
 // @ts-ignore
 import pkg from './package.json'
 
 const resolve = (path: string) => fileURLToPath(new URL(path, import.meta.url))
+
+const external = ['vue', 'vue-router', 'axios', 'qs', 'viewerjs']
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
@@ -34,18 +38,25 @@ export default defineConfig(({ mode }) => {
         minify: true,
         inject: {
           data: {
-            __VERSION__: pkg.version,
-            injectSpin: ejs.render(
-              ejs.fileLoader(resolve('./template/spin.html')).toString()
+            __VERSION__: pkg.version
+          },
+          tags: [
+            ...renderExternalScript(
+              mode,
+              pkg.dependencies,
+              external
             ),
-            injectScript: ejs.render(
-              ejs.fileLoader(resolve('./template/script.html')).toString(),
-              {
-                __DEPEND__: pkg.dependencies,
-                __DEV__: mode === 'development'
-              }
-            )
-          }
+            {
+              injectTo: 'body-prepend',
+              tag: 'div',
+              attrs: {
+                id: 'app'
+              },
+              children: ejs.render(
+                ejs.fileLoader(resolve('./template/spin.html')).toString()
+              )
+            }
+          ]
         }
       }),
       pluginImporter({
@@ -78,17 +89,24 @@ export default defineConfig(({ mode }) => {
       },
       modules: {
         auto: true,
-        generateScopedName:
-          mode === 'development'
-            ? '[local]_[hash:base64:8]'
-            : '[hash:base64:6]',
-        globalModulePaths: [
-          /\.module\.[sc|sa|le|c]ss$/i
-        ]
+        generateScopedName: mode === 'development' ? '[local]_[hash:base64:8]' : '[hash:base64:6]',
+        globalModulePaths: [/\.module\.[sc|sa|le|c]ss$/i]
       },
       postcss: {
+        plugins: [autoprefixer()]
+      }
+    },
+    build: {
+      rollupOptions: {
+        external,
         plugins: [
-          autoprefixer()
+          externalGlobals({
+            qs: 'Qs',
+            vue: 'Vue',
+            axios: 'axios',
+            viewerjs: 'Viewer',
+            'vue-router': 'VueRouter'
+          })
         ]
       }
     }

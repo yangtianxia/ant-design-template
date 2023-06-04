@@ -10,6 +10,8 @@ declare module '*.sass'
 declare module '*.styl'
 declare module '*.json'
 
+declare type ScrollElement = Element | Window
+
 declare type Callback<T = unknown, U = void> = (...args: T[]) => U
 
 declare type Numeric = number | string
